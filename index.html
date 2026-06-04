@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional Image Resizer and Compressor for UPSC and IIT-JEE applications. Fast, private, client-side processing. Free tool.">
+    <meta name="keywords" content="image resizer, image compressor, UPSC, IIT-JEE, photo resize, signature resize">
+    <meta name="author" content="Image Resizer Pro">
+    <meta name="theme-color" content="#3B82F6">
+    
+    <title>Image Resizer & Compressor | UPSC & IIT-JEE Applications</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Prevent layout shift by reserving space for ads */
+        .ad-slot {
+            min-height: 90px;
+            margin: 1rem 0;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 0.875rem;
+            border: 1px dashed #d1d5db;
+        }
+        
+        /* Smooth transitions */
+        button, input {
+            transition: all 0.2s ease;
+        }
+        
+        /* Preset button active state */
+        .preset-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Upload area hover state */
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f0f9ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+        }
+        
+        /* Loading spinner */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Progress bar animation */
+        @keyframes progress-width {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        /* Responsive container */
+        .container-safe {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Card shadow */
+        .card-shadow {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 card-shadow">
+        <nav class="container-safe py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">ImagePro Resize</h1>
+                    <p class="text-xs text-gray-500">UPSC & IIT-JEE</p>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#home" class="text-gray-700 hover:text-blue-500 transition font-medium text-sm">Home</a>
+                <a href="#about" class="text-gray-700 hover:text-blue-500 transition font-medium text-sm">About</a>
+                <a href="#contact" class="text-gray-700 hover:text-blue-500 transition font-medium text-sm">Contact</a>
+                <a href="#privacy" class="text-gray-700 hover:text-blue-500 transition font-medium text-sm">Privacy</a>
+                <a href="#terms" class="text-gray-700 hover:text-blue-500 transition font-medium text-sm">Terms</a>
+            </nav>
+            
+            <!-- Mobile menu toggle (placeholder for responsive design) -->
+            <button id="mobileMenuBtn" class="md:hidden p-2 hover:bg-gray-100 rounded-lg">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="home" class="min-h-screen">
+        <div class="container-safe py-12">
+            <!-- Hero Section -->
+            <section class="mb-12 text-center">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Resize & Compress Images Instantly</h2>
+                <p class="text-xl text-gray-600 mb-8">Perfect for UPSC and IIT-JEE applications. Fast, free, and completely private.</p>
+                <div class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium">
+                    ✓ Client-side processing • ✓ Zero data collection • ✓ 100% Private
+                </div>
+            </section>
+
+            <!-- AdSense Slot 1 (Above fold) -->
+            <div class="ad-slot mb-12">
+                <!-- Google AdSense Auto ad will be inserted here -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+                     data-ad-format="auto"
+                     data-ad-slot="1234567890"></ins>
+            </div>
+
+            <!-- Main Tool Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                <!-- Tool Panel -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl card-shadow p-8">
+                        <!-- Image Upload Section -->
+                        <div id="uploadSection" class="mb-8">
+                            <label class="block text-sm font-semibold text-gray-900 mb-4">Step 1: Upload Image</label>
+                            <div id="uploadArea" class="upload-area border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer transition">
+                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                <p class="text-gray-900 font-medium mb-2">Click to upload or drag & drop</p>
+                                <p class="text-gray-500 text-sm">JPG/JPEG files only • Max 10MB</p>
+                                <input type="file" id="fileInput" accept=".jpg,.jpeg" class="hidden">
+                            </div>
+                            <div id="fileInfo" class="mt-4 hidden">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <p class="text-sm text-green-800"><span id="fileName" class="font-semibold">No file</span> selected ✓</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AdSense Slot 2 (Between sections) -->
+                        <div class="ad-slot my-8">
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+                                 data-ad-format="auto"
+                                 data-ad-slot="2345678901"></ins>
+                        </div>
+
+                        <!-- Preset Selection -->
+                        <div id="presetSection" class="mb-8">
+                            <label class="block text-sm font-semibold text-gray-900 mb-4">Step 2: Select Application & Type</label>
+                            
+                            <!-- UPSC Preset -->
+                            <div class="mb-6">
+                                <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs">U</span>
+                                    UPSC Standard
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button class="preset-btn upsc-photo px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-blue-500 hover:text-blue-600" data-preset="upsc" data-type="photo">
+                                        📷 UPSC Photo
+                                    </button>
+                                    <button class="preset-btn upsc-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-blue-500 hover:text-blue-600" data-preset="upsc" data-type="signature">
+                                        ✍️ UPSC Signature
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- IIT-JEE Preset -->
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs">I</span>
+                                    IIT-JEE Standard
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button class="preset-btn iitjee-photo px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-purple-500 hover:text-purple-600" data-preset="iitjee" data-type="photo">
+                                        📷 IIT-JEE Photo
+                                    </button>
+                                    <button class="preset-btn iitjee-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-purple-500 hover:text-purple-600" data-preset="iitjee" data-type="signature">
+                                        ✍️ IIT-JEE Signature
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UPSC Photo Options (Hidden by default) -->
+                        <div id="upscPhotoOptions" class="mb-8 hidden bg-blue-50 border border-blue-200 rounded-lg p-6">
+                            <h3 class="text-sm font-bold text-gray-900 mb-4">UPSC Photo Options</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="candidateName" class="block text-xs font-medium text-gray-700 mb-2">Candidate Name (for watermark)</label>
+                                    <input type="text" id="candidateName" placeholder="e.g., John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label for="photoDate" class="block text-xs font-medium text-gray-700 mb-2">Date (for watermark)</label>
+                                    <input type="date" id="photoDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="bg-blue-100 border border-blue-300 rounded-lg p-3 text-xs text-blue-900">
+                                    <strong>Note:</strong> These details will be overlaid at the bottom of your photo (UPSC 2026 requirement).
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Progress -->
+                        <div id="processingSection" class="mb-8 hidden">
+                            <label class="block text-sm font-semibold text-gray-900 mb-4">Processing...</label>
+                            <div class="space-y-4">
+                                <div class="bg-gray-100 rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <svg class="w-5 h-5 text-blue-500 spinner" fill="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="60" stroke-dashoffset="0"></circle>
+                                        </svg>
+                                        <p class="text-sm font-medium text-gray-700">Optimizing quality with binary search...</p>
+                                    </div>
+                                    <div class="text-xs text-gray-600">
+                                        Quality: <span id="qualityPercent">0</span>% • Size: <span id="currentSize">0</span> KB
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AdSense Slot 3 (Between sections) -->
+                        <div class="ad-slot my-8" id="adSlot3">
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+                                 data-ad-format="auto"
+                                 data-ad-slot="3456789012"></ins>
+                        </div>
+
+                        <!-- Preview & Download -->
+                        <div id="previewSection" class="hidden">
+                            <label class="block text-sm font-semibold text-gray-900 mb-4">Step 3: Preview & Download</label>
+                            <div class="bg-gray-100 rounded-lg overflow-hidden mb-6">
+                                <img id="previewImage" src="" alt="Preview" class="w-full h-auto max-h-96 object-contain">
+                            </div>
+                            
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                                <div class="grid grid-cols-3 gap-4 mb-3">
+                                    <div>
+                                        <p class="text-xs text-gray-600">Final Size</p>
+                                        <p class="text-lg font-bold text-green-700" id="finalSize">0 KB</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-600">Dimensions</p>
+                                        <p class="text-lg font-bold text-green-700" id="finalDimensions">0x0 px</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-600">Quality</p>
+                                        <p class="text-lg font-bold text-green-700" id="finalQuality">0%</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-green-900 font-medium">✓ Ready for submission!</p>
+                            </div>
+
+                            <button id="downloadBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2 mb-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Download Image
+                            </button>
+
+                            <button id="resetBtn" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 px-4 rounded-lg transition">
+                                Process Another Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="lg:col-span-1">
+                    <!-- AdSense Slot 4 (Sidebar) -->
+                    <div class="ad-slot mb-8 sticky top-24">
+                        <ins class="adsbygoogle"
+                             style="display:block; max-width:300px; height:600px"
+                             data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+                             data-ad-slot="4567890123"></ins>
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div class="bg-white rounded-xl card-shadow p-6 mb-8">
+                        <h3 class="text-sm font-bold text-gray-900 mb-4">Why This Tool?</h3>
+                        <ul class="space-y-3 text-sm text-gray-700">
+                            <li class="flex gap-2">
+                                <span class="text-blue-500 font-bold">✓</span>
+                                <span><strong>100% Private</strong> - No uploads to servers</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-blue-500 font-bold">✓</span>
+                                <span><strong>Lightning Fast</strong> - Instant processing</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-blue-500 font-bold">✓</span>
+                                <span><strong>Official Standards</strong> - Exact guidelines met</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-blue-500 font-bold">✓</span>
+                                <span><strong>Free Forever</strong> - No hidden costs</span>
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Guidelines Section -->
+            <section class="mb-12 bg-white rounded-xl card-shadow p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8">Official Guidelines (2026)</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- UPSC Guidelines -->
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">U</span>
+                            UPSC Application Requirements
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">📷 Photograph Specifications</h4>
+                                <ul class="text-sm text-gray-700 space-y-2 ml-4">
+                                    <li>• <strong>Dimensions:</strong> 4 cm × 5 cm (approximately 472×591 pixels at 300 DPI)</li>
+                                    <li>• <strong>File Size:</strong> Between 20 KB and 300 KB</li>
+                                    <li>• <strong>Format:</strong> JPG/JPEG only</li>
+                                    <li>• <strong>Face Coverage:</strong> 50% of image area</li>
+                                    <li>• <strong>Background:</strong> Plain white or light</li>
+                                    <li>• <strong>Watermark:</strong> Name & Date required (2026)</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">✍️ Signature Specifications</h4>
+                                <ul class="text-sm text-gray-700 space-y-2 ml-4">
+                                    <li>• <strong>Dimensions:</strong> 3.5 cm × 1.5 cm (approximately 413×177 pixels)</li>
+                                    <li>• <strong>File Size:</strong> Between 20 KB and 50 KB</li>
+                                    <li>• <strong>Format:</strong> JPG/JPEG only</li>
+                                    <li>• <strong>Background:</strong> White/transparent</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IIT-JEE Guidelines -->
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold">I</span>
+                            IIT-JEE Application Requirements
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">📷 Photograph Specifications</h4>
+                                <ul class="text-sm text-gray-700 space-y-2 ml-4">
+                                    <li>• <strong>Dimensions:</strong> 3.5 cm × 4.5 cm (approximately 413×531 pixels)</li>
+                                    <li>• <strong>File Size:</strong> Between 10 KB and 200 KB</li>
+                                    <li>• <strong>Format:</strong> JPG/JPEG only</li>
+                                    <li>• <strong>Face Coverage:</strong> 50% of image area</li>
+                                    <li>• <strong>Background:</strong> Plain white or light</li>
+                                    <li>• <strong>Recent Photo:</strong> Preferably taken within 6 months</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">✍️ Signature Specifications</h4>
+                                <ul class="text-sm text-gray-700 space-y-2 ml-4">
+                                    <li>• <strong>Dimensions:</strong> 3.5 cm × 1.5 cm (approximately 413×177 pixels)</li>
+                                    <li>• <strong>File Size:</strong> Between 10 KB and 100 KB</li>
+                                    <li>• <strong>Format:</strong> JPG/JPEG only</li>
+                                    <li>• <strong>Background:</strong> White</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AdSense Slot 5 (Content section) -->
+            <div class="ad-slot my-12">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+                     data-ad-format="auto"
+                     data-ad-slot="5678901234"></ins>
+            </div>
+
+            <!-- How It Works Section -->
+            <section class="mb-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8">How It Works</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Upload</h3>
+                        <p class="text-sm text-gray-700">Click or drag your JPG/JPEG image to upload</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Select</h3>
+                        <p class="text-sm text-gray-700">Choose your exam and image type</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Process</h3>
+                        <p class="text-sm text-gray-700">Binary search finds perfect quality</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">4</div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Download</h3>
+                        <p class="text-sm text-gray-700">Get your perfectly sized image</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-white rounded-lg p-6 border-l-4 border-blue-500">
+                    <h3 class="font-semibold text-gray-900 mb-2">🔒 Your Privacy is Our Priority</h3>
+                    <p class="text-gray-700 text-sm">All image processing happens directly in your browser using the HTML5 Canvas API. Your images are <strong>never uploaded to any server</strong>. We don't collect, store, or analyze your data. This approach ensures your documents remain completely private and helps us keep the service free for everyone.</p>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section id="about" class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8">Frequently Asked Questions</h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                        <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="0">
+                            <span>Is my image data safe?</span>
+                            <span class="text-gray-500">+</span>
+                        </button>
+                        <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
+                            <p>Yes, absolutely. All processing happens locally in your browser. Your images never leave your device. We use the HTML5 Canvas API for all image manipulations, and no data is sent to our servers.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                        <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="1">
+                            <span>What if my image is too large or too small?</span>
+                            <span class="text-gray-500">+</span>
+                        </button>
+                        <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
+                            <p>Our tool automatically resizes your image to the exact dimensions required by the exam. If your image is too small, we upscale it (which may reduce quality). If it's too large, we downscale it. For best results, start with a high-quality image.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                        <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="2">
+                            <span>Why do I need to add my name and date to UPSC photos?</span>
+                            <span class="text-gray-500">+</span>
+                        </button>
+                        <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
+                            <p>UPSC has made it mandatory from 2026 onwards to include the candidate's name and date of photo at the bottom of the photograph. This helps verify the authenticity and recency of the photograph during the application process.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                        <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="3">
+                            <span>How does the binary search algorithm work?</span>
+                            <span class="text-gray-500">+</span>
+                        </button>
+                        <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
+                            <p>We use a binary search algorithm to adjust the JPEG quality parameter. Starting from 50% quality, we iteratively compress the image, checking if the file size falls within the required range. This ensures you get the best possible image quality while meeting the exact file size requirements of your exam.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                        <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="4">
+                            <span>Which browsers are supported?</span>
+                            <span class="text-gray-500">+</span>
+                        </button>
+                        <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
+                            <p>This tool works on all modern browsers including Chrome, Firefox, Safari, and Edge on desktop and mobile devices. We use standard HTML5 Canvas API features that are widely supported.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact" class="mb-12 bg-white rounded-xl card-shadow p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Contact Us</h2>
+                <p class="text-gray-700 mb-6">Have questions or feedback? We'd love to hear from you!</p>
+                
+                <form id="contactForm" class="space-y-4 max-w-md">
+                    <div>
+                        <label for="contactEmail" class="block text-sm font-medium text-gray-900 mb-2">Email</label>
+                        <input type="email" id="contactEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="contactMessage" class="block text-sm font-medium text-gray-900 mb-2">Message</label>
+                        <textarea id="contactMessage" rows="4" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition">
+                        Send Message
+                    </button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container-safe">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-white font-bold mb-4">ImagePro Resize</h3>
+                    <p class="text-sm">Free image resizer for UPSC and IIT-JEE applications.</p>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Quick Links</h3>
+                    <ul class="text-sm space-y-2">
+                        <li><a href="#home" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#about" class="hover:text-white transition">About</a></li>
+                        <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4" id="privacy">Legal</h3>
+                    <ul class="text-sm space-y-2">
+                        <li><a href="#privacy-policy" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#terms-service" class="hover:text-white transition">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Support</h3>
+                    <ul class="text-sm space-y-2">
+                        <li><a href="#contact" class="hover:text-white transition">Report Issue</a></li>
+                        <li><a href="#contact" class="hover:text-white transition">Send Feedback</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <p class="text-xs text-gray-400">&copy; 2026 ImagePro Resize. All rights reserved.</p>
+                    <p class="text-xs text-gray-400">Built with ❤️ for students. No data collection. 100% Private.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Hidden Legal Pages -->
+    <div id="privacy-policy" class="hidden">
+        <h2>Privacy Policy</h2>
+        <p>We respect your privacy. All image processing happens locally in your browser. We do not collect, store, or share any personal information or images.</p>
+    </div>
+    
+    <div id="terms-service" class="hidden">
+        <h2>Terms of Service</h2>
+        <p>By using this tool, you agree to use it only for lawful purposes. We provide this tool as-is without any warranties.</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+
+    <!-- Google AdSense Script (Replace with actual AdSense code) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx" crossorigin="anonymous"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+</html>
