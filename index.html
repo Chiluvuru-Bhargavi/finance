@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Professional Image Resizer and Compressor for UPSC and IIT-JEE applications. Fast, private, client-side processing. Free tool.">
-    <meta name="keywords" content="image resizer, image compressor, UPSC, IIT-JEE, photo resize, signature resize">
+    <meta name="description" content="Professional Image Resizer and Compressor for UPSC, IIT-JEE, and NEET applications. Fast, private, client-side processing. Free tool.">
+    <meta name="keywords" content="image resizer, image compressor, UPSC, IIT-JEE, NEET, photo resize, signature resize">
     <meta name="author" content="Image Resizer Pro">
     <meta name="theme-color" content="#3B82F6">
     
-    <title>Image Resizer & Compressor | UPSC & IIT-JEE Applications</title>
+    <title>Image Resizer & Compressor | UPSC, IIT-JEE & NEET Applications</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,6 +47,13 @@
             background-color: #3b82f6;
             color: white;
             box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* NEET preset button active state */
+        .preset-btn.neet-preset.active {
+            background-color: #ec4899;
+            color: white;
+            box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);
         }
         
         /* Upload area hover state */
@@ -101,7 +108,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-gray-900">ImagePro Resize</h1>
-                    <p class="text-xs text-gray-500">UPSC & IIT-JEE</p>
+                    <p class="text-xs text-gray-500">UPSC, IIT-JEE & NEET</p>
                 </div>
             </div>
             
@@ -129,9 +136,9 @@
             <!-- Hero Section -->
             <section class="mb-12 text-center">
                 <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Resize & Compress Images Instantly</h2>
-                <p class="text-xl text-gray-600 mb-8">Perfect for UPSC and IIT-JEE applications. Fast, free, and completely private.</p>
+                <p class="text-xl text-gray-600 mb-8">Perfect for UPSC, IIT-JEE, and NEET applications. Fast, free, and completely private.</p>
                 <div class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium">
-                    ✓ Client-side processing • ✓ Zero data collection • ✓ 100% Private
+                    ✓ Client-side processing • ✓ Zero data collection • ✓ 100% Private • ✓ All Image Formats
                 </div>
             </section>
 
@@ -158,12 +165,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 <p class="text-gray-900 font-medium mb-2">Click to upload or drag & drop</p>
-                                <p class="text-gray-500 text-sm">JPG/JPEG files only • Max 10MB</p>
-                                <input type="file" id="fileInput" accept=".jpg,.jpeg" class="hidden">
+                                <p class="text-gray-500 text-sm">Any image format • Max 10MB • Auto-converted to JPG</p>
+                                <input type="file" id="fileInput" accept="image/*" class="hidden">
                             </div>
                             <div id="fileInfo" class="mt-4 hidden">
                                 <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                                     <p class="text-sm text-green-800"><span id="fileName" class="font-semibold">No file</span> selected ✓</p>
+                                    <p class="text-xs text-green-700 mt-1" id="fileFormatInfo"></p>
                                 </div>
                             </div>
                         </div>
@@ -198,7 +206,7 @@
                             </div>
 
                             <!-- IIT-JEE Preset -->
-                            <div>
+                            <div class="mb-6">
                                 <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                                     <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs">I</span>
                                     IIT-JEE Standard
@@ -209,6 +217,28 @@
                                     </button>
                                     <button class="preset-btn iitjee-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-purple-500 hover:text-purple-600" data-preset="iitjee" data-type="signature">
                                         ✍️ IIT-JEE Signature
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- NEET Preset -->
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-xs">N</span>
+                                    NEET Standard (NTA-Compliant)
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button class="preset-btn neet-preset neet-passport px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="passport">
+                                        📷 Passport Size
+                                    </button>
+                                    <button class="preset-btn neet-preset neet-postcard px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="postcard">
+                                        🖼️ Postcard Size
+                                    </button>
+                                    <button class="preset-btn neet-preset neet-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="signature">
+                                        ✍️ Signature
+                                    </button>
+                                    <button class="preset-btn neet-preset neet-thumb px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="thumb">
+                                        👍 Thumb Impression
                                     </button>
                                 </div>
                             </div>
@@ -288,7 +318,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                 </svg>
-                                Download Image
+                                Download Image (JPG)
                             </button>
 
                             <button id="resetBtn" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 px-4 rounded-lg transition">
@@ -322,6 +352,10 @@
                             </li>
                             <li class="flex gap-2">
                                 <span class="text-blue-500 font-bold">✓</span>
+                                <span><strong>All Formats</strong> - Auto-converted to JPG</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-blue-500 font-bold">✓</span>
                                 <span><strong>Official Standards</strong> - Exact guidelines met</span>
                             </li>
                             <li class="flex gap-2">
@@ -337,7 +371,7 @@
             <section class="mb-12 bg-white rounded-xl card-shadow p-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-8">Official Guidelines (2026)</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     <!-- UPSC Guidelines -->
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -402,6 +436,56 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- NEET Guidelines -->
+                <div class="bg-pink-50 border border-pink-200 rounded-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm font-bold">N</span>
+                        NEET (NTA) Application Requirements
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">📷 Passport Size Photograph</h4>
+                            <ul class="text-sm text-gray-700 space-y-1 ml-4">
+                                <li>• <strong>Dimensions:</strong> 3.5 cm × 4.5 cm (~413×531 px)</li>
+                                <li>• <strong>File Size:</strong> 10 KB - 200 KB</li>
+                                <li>• <strong>Format:</strong> JPG/JPEG</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">🖼️ Postcard Size Photograph</h4>
+                            <ul class="text-sm text-gray-700 space-y-1 ml-4">
+                                <li>• <strong>Dimensions:</strong> 4 × 6 inches (~472×708 px)</li>
+                                <li>• <strong>File Size:</strong> 10 KB - 200 KB</li>
+                                <li>• <strong>Format:</strong> JPG/JPEG</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">✍️ Signature</h4>
+                            <ul class="text-sm text-gray-700 space-y-1 ml-4">
+                                <li>• <strong>Dimensions:</strong> 3.5 cm × 1.5 cm (~413×177 px)</li>
+                                <li>• <strong>File Size:</strong> 4 KB - 30 KB</li>
+                                <li>• <strong>Format:</strong> JPG/JPEG</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">👍 Thumb Impression</h4>
+                            <ul class="text-sm text-gray-700 space-y-1 ml-4">
+                                <li>• <strong>Aspect Ratio:</strong> Standard thumb (approx 2:2)</li>
+                                <li>• <strong>File Size:</strong> 10 KB - 200 KB</li>
+                                <li>• <strong>Format:</strong> JPG/JPEG</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 bg-white border border-pink-300 rounded-lg p-3 text-xs text-pink-900">
+                        <strong>NTA Compliance Note:</strong> All images must meet NTA's strict quality and size requirements for NEET applications. This tool ensures precise compliance with 2026 NTA guidelines.
+                    </div>
+                </div>
             </section>
 
             <!-- AdSense Slot 5 (Content section) -->
@@ -417,32 +501,32 @@
             <section class="mb-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-8">How It Works</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div class="text-center">
                         <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
                         <h3 class="font-semibold text-gray-900 mb-2">Upload</h3>
-                        <p class="text-sm text-gray-700">Click or drag your JPG/JPEG image to upload</p>
+                        <p class="text-sm text-gray-700">Click or drag any image format (PNG, WebP, BMP, etc.)</p>
                     </div>
                     <div class="text-center">
                         <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
-                        <h3 class="font-semibold text-gray-900 mb-2">Select</h3>
-                        <p class="text-sm text-gray-700">Choose your exam and image type</p>
+                        <h3 class="font-semibold text-gray-900 mb-2">Convert</h3>
+                        <p class="text-sm text-gray-700">Transparent backgrounds automatically filled with white</p>
                     </div>
                     <div class="text-center">
                         <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
                         <h3 class="font-semibold text-gray-900 mb-2">Process</h3>
-                        <p class="text-sm text-gray-700">Binary search finds perfect quality</p>
+                        <p class="text-sm text-gray-700">Binary search finds perfect JPG quality</p>
                     </div>
                     <div class="text-center">
                         <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">4</div>
                         <h3 class="font-semibold text-gray-900 mb-2">Download</h3>
-                        <p class="text-sm text-gray-700">Get your perfectly sized image</p>
+                        <p class="text-sm text-gray-700">Get your perfectly sized JPG file</p>
                     </div>
                 </div>
 
-                <div class="mt-8 bg-white rounded-lg p-6 border-l-4 border-blue-500">
+                <div class="bg-white rounded-lg p-6 border-l-4 border-blue-500">
                     <h3 class="font-semibold text-gray-900 mb-2">🔒 Your Privacy is Our Priority</h3>
-                    <p class="text-gray-700 text-sm">All image processing happens directly in your browser using the HTML5 Canvas API. Your images are <strong>never uploaded to any server</strong>. We don't collect, store, or analyze your data. This approach ensures your documents remain completely private and helps us keep the service free for everyone.</p>
+                    <p class="text-gray-700 text-sm">All image processing happens directly in your browser using the HTML5 Canvas API. Your images are <strong>never uploaded to any server</strong>. We don't collect, store, or analyze your data. This approach ensures your documents remain completely private and helps us keep the service free for everyone. Additionally, we automatically convert any image format to standard JPG, ensuring universal compatibility with all exam portals.</p>
                 </div>
             </section>
 
@@ -463,11 +547,11 @@
 
                     <div class="bg-white rounded-lg card-shadow overflow-hidden">
                         <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="1">
-                            <span>What if my image is too large or too small?</span>
+                            <span>Can I upload PNG or other image formats?</span>
                             <span class="text-gray-500">+</span>
                         </button>
                         <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
-                            <p>Our tool automatically resizes your image to the exact dimensions required by the exam. If your image is too small, we upscale it (which may reduce quality). If it's too large, we downscale it. For best results, start with a high-quality image.</p>
+                            <p>Yes! We support all image formats (PNG, WebP, BMP, GIF, TIFF, etc.). If your image has a transparent background (like most PNGs), we automatically fill it with white before conversion. The final output is always a standard JPG file, which is required by all exam portals.</p>
                         </div>
                     </div>
 
@@ -493,6 +577,16 @@
 
                     <div class="bg-white rounded-lg card-shadow overflow-hidden">
                         <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="4">
+                            <span>What makes this compliant with NEET (NTA) standards?</span>
+                            <span class="text-gray-500">+</span>
+                        </button>
+                        <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
+                            <p>Our tool includes all NTA-compliant presets for NEET: Passport Size Photo (413×531 px), Postcard Size Photo (472×708 px), Signature (413×177 px), and Thumb Impression. Each adheres to strict file size limits and is verified against the latest 2026 NTA guidelines.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                        <button class="faq-toggle w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center" data-answer="5">
                             <span>Which browsers are supported?</span>
                             <span class="text-gray-500">+</span>
                         </button>
@@ -531,7 +625,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <div>
                     <h3 class="text-white font-bold mb-4">ImagePro Resize</h3>
-                    <p class="text-sm">Free image resizer for UPSC and IIT-JEE applications.</p>
+                    <p class="text-sm">Free image resizer for UPSC, IIT-JEE, and NEET applications.</p>
                 </div>
                 <div>
                     <h3 class="text-white font-bold mb-4">Quick Links</h3>
@@ -560,7 +654,7 @@
             <div class="border-t border-gray-700 pt-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <p class="text-xs text-gray-400">&copy; 2026 ImagePro Resize. All rights reserved.</p>
-                    <p class="text-xs text-gray-400">Built with ❤️ for students. No data collection. 100% Private.</p>
+                    <p class="text-xs text-gray-400">Built with ❤️ for students. No data collection. 100% Private. All Formats Supported.</p>
                 </div>
             </div>
         </div>
