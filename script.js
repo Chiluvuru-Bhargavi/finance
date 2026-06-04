@@ -1,11 +1,12 @@
 /**
- * Image Resizer & Compressor for UPSC and IIT-JEE Applications
+ * Image Resizer & Compressor for UPSC, IIT-JEE, and NEET Applications
+ * Enhanced with Universal Image Format Support and Auto-JPG Conversion
  * Client-side image processing using HTML5 Canvas API
  * No server uploads, 100% private processing
  */
 
 // ============================================================================
-// CONFIGURATION: Official image specifications
+// CONFIGURATION: Official image specifications for all exams
 // ============================================================================
 
 const IMAGE_SPECS = {
@@ -40,6 +41,36 @@ const IMAGE_SPECS = {
             maxSize: 100,
             label: 'IIT-JEE Signature'
         }
+    },
+    neet: {
+        passport: {
+            width: 413,
+            height: 531,
+            minSize: 10,
+            maxSize: 200,
+            label: 'NEET Passport Size Photo'
+        },
+        postcard: {
+            width: 472,
+            height: 708,
+            minSize: 10,
+            maxSize: 200,
+            label: 'NEET Postcard Size Photo'
+        },
+        signature: {
+            width: 413,
+            height: 177,
+            minSize: 4,
+            maxSize: 30,
+            label: 'NEET Signature'
+        },
+        thumb: {
+            width: 120,
+            height: 120,
+            minSize: 10,
+            maxSize: 200,
+            label: 'NEET Thumb Impression'
+        }
     }
 };
 
@@ -50,6 +81,7 @@ const IMAGE_SPECS = {
 let appState = {
     uploadedFile: null,
     uploadedImage: null,
+    imageFormat: 'jpg', // Track original format
     selectedPreset: null,
     selectedType: null,
     processedImage: null,
@@ -68,6 +100,7 @@ const elements = {
     fileInput: document.getElementById('fileInput'),
     fileInfo: document.getElementById('fileInfo'),
     fileName: document.getElementById('fileName'),
+    fileFormatInfo: document.getElementById('fileFormatInfo'),
     uploadSection: document.getElementById('uploadSection'),
     presetSection: document.getElementById('presetSection'),
     upscPhotoOptions: document.getElementById('upscPhotoOptions'),
@@ -126,16 +159,16 @@ function initializeUploadArea() {
 }
 
 /**
- * Handle file selection
+ * Handle file selection - Now accepts any image format
  */
 function handleFileSelect() {
     const file = elements.fileInput.files[0];
     
     if (!file) return;
     
-    // Validate file type
-    if (!file.type.match(/image\/(jpg|jpeg)/)) {
-        showError('Please upload a JPG/JPEG file only');
+    // Validate file type - accepts all image formats
+    if (!file.type.startsWith('image/')) {
+        showError('Please upload a valid image file (PNG, JPG, WebP, BMP, etc.)');
         return;
     }
     
@@ -147,6 +180,12 @@ function handleFileSelect() {
     
     appState.uploadedFile = file;
     elements.fileName.textContent = file.name;
+    
+    // Display original format information
+    const formatType = getImageFormatFromMimeType(file.type);
+    appState.imageFormat = formatType;
+    elements.fileFormatInfo.textContent = `Original format: ${formatType.toUpperCase()} • Will be converted to JPG`;
+    
     elements.fileInfo.classList.remove('hidden');
     
     // Read file as image
@@ -156,9 +195,33 @@ function handleFileSelect() {
         img.onload = () => {
             appState.uploadedImage = img;
         };
+        img.onerror = () => {
+            showError('Failed to load image. Please try another file.');
+        };
         img.src = e.target.result;
     };
+    reader.onerror = () => {
+        showError('Failed to read file. Please try again.');
+    };
     reader.readAsDataURL(file);
+}
+
+/**
+ * Extract image format from MIME type
+ */
+function getImageFormatFromMimeType(mimeType) {
+    const formats = {
+        'image/jpeg': 'jpg',
+        'image/jpg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'image/bmp': 'bmp',
+        'image/gif': 'gif',
+        'image/tiff': 'tiff',
+        'image/x-tiff': 'tiff'
+    };
+    
+    return formats[mimeType] || 'unknown';
 }
 
 // ============================================================================
@@ -212,12 +275,13 @@ function handlePresetSelection(btn) {
 }
 
 // ============================================================================
-// IMAGE PROCESSING: BINARY SEARCH FOR OPTIMAL QUALITY
+// IMAGE PROCESSING: BINARY SEARCH FOR OPTIMAL QUALITY WITH FORMAT CONVERSION
 // ============================================================================
 
 /**
  * Main image processing function
  * Uses binary search to find optimal JPEG quality for target file size
+ * Handles format conversion from any input format to JPG
  */
 async function processImage() {
     if (!appState.uploadedImage || !appState.selectedPreset || !appState.selectedType) {
@@ -247,7 +311,8 @@ async function processImage() {
             specs.minSize,
             specs.maxSize,
             appState.selectedPreset,
-            appState.selectedType
+            appState.selectedType,
+            appState.imageFormat
         );
         
         if (result.success) {
@@ -275,8 +340,9 @@ async function processImage() {
 /**
  * Binary search algorithm to find optimal JPEG quality
  * Ensures the final file size falls within the target range
+ * Handles transparent backgrounds for non-JPG formats
  */
-async function binarySearchQuality(image, targetWidth, targetHeight, minSizeKB, maxSizeKB, preset, type) {
+async function binarySearchQuality(image, targetWidth, targetHeight, minSizeKB, maxSizeKB, preset, type, originalFormat) {
     const minSizeBytes = minSizeKB * 1024;
     const maxSizeBytes = maxSizeKB * 1024;
     
@@ -293,14 +359,15 @@ async function binarySearchQuality(image, targetWidth, targetHeight, minSizeKB, 
         // Update UI with current progress
         updateProcessingProgress(midQuality * 100);
         
-        // Compress image at this quality
+        // Compress image at this quality (with transparent-to-white conversion if needed)
         const result = compressImage(
             image,
             targetWidth,
             targetHeight,
             midQuality,
             preset,
-            type
+            type,
+            originalFormat
         );
         
         const dataUrl = result.dataUrl;
@@ -365,15 +432,21 @@ async function binarySearchQuality(image, targetWidth, targetHeight, minSizeKB, 
 
 /**
  * Compress image using Canvas API
+ * Handles transparent-to-white background conversion for non-JPG formats
  * Applies watermark for UPSC photos
+ * Always outputs as JPG regardless of input format
  */
-function compressImage(image, targetWidth, targetHeight, quality, preset, type) {
+function compressImage(image, targetWidth, targetHeight, quality, preset, type, originalFormat) {
     // Create canvas
     const canvas = document.createElement('canvas');
     canvas.width = targetWidth;
     canvas.height = targetHeight;
     
     const ctx = canvas.getContext('2d');
+    
+    // Fill background with WHITE first (critical for PNG transparency)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, targetWidth, targetHeight);
     
     // Calculate aspect ratio
     const imgAspect = image.width / image.height;
@@ -395,11 +468,7 @@ function compressImage(image, targetWidth, targetHeight, quality, preset, type) 
         offsetY = (targetHeight - drawHeight) / 2;
     }
     
-    // Fill background (white)
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, targetWidth, targetHeight);
-    
-    // Draw resized image
+    // Draw resized image on white background
     ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
     
     // Add watermark for UPSC photos
@@ -408,6 +477,7 @@ function compressImage(image, targetWidth, targetHeight, quality, preset, type) 
     }
     
     // Convert to JPEG with specified quality
+    // Note: toDataURL always outputs image/jpeg when specified, regardless of input format
     const dataUrl = canvas.toDataURL('image/jpeg', quality);
     
     return {
@@ -477,7 +547,7 @@ function updatePreview(result) {
 // ============================================================================
 
 /**
- * Download processed image
+ * Download processed image as JPG
  */
 function handleDownload() {
     if (!appState.processedImage) {
@@ -489,7 +559,7 @@ function handleDownload() {
     const link = document.createElement('a');
     link.href = appState.processedImage;
     
-    // Generate filename
+    // Generate filename with JPG extension
     const preset = appState.selectedPreset.toUpperCase();
     const type = appState.selectedType.charAt(0).toUpperCase() + appState.selectedType.slice(1);
     const timestamp = new Date().toISOString().split('T')[0];
@@ -499,7 +569,7 @@ function handleDownload() {
     link.click();
     document.body.removeChild(link);
     
-    showSuccess('Image downloaded successfully!');
+    showSuccess('Image downloaded successfully as JPG!');
 }
 
 /**
@@ -510,6 +580,7 @@ function handleReset() {
     appState = {
         uploadedFile: null,
         uploadedImage: null,
+        imageFormat: 'jpg',
         selectedPreset: null,
         selectedType: null,
         processedImage: null,
@@ -528,6 +599,7 @@ function handleReset() {
     elements.presetButtons.forEach(btn => btn.classList.remove('active'));
     elements.candidateName.value = '';
     elements.photoDate.value = '';
+    elements.fileFormatInfo.textContent = '';
 }
 
 // ============================================================================
@@ -624,7 +696,8 @@ function showSuccess(message) {
  * Initialize the entire application
  */
 function initializeApp() {
-    console.log('Initializing Image Resizer & Compressor App');
+    console.log('Initializing Image Resizer & Compressor App (Enhanced)');
+    console.log('Supported formats: JPG, PNG (with transparency handling), WebP, BMP, GIF, TIFF');
     
     // Setup handlers
     initializeUploadArea();
@@ -641,6 +714,7 @@ function initializeApp() {
     elements.photoDate.value = today;
     
     console.log('App initialized successfully');
+    console.log('Image specs loaded:', Object.keys(IMAGE_SPECS).length, 'exam presets');
 }
 
 /**
@@ -681,6 +755,11 @@ style.textContent = `
     /* Performance: GPU acceleration for smooth scrolling */
     html {
         scroll-behavior: smooth;
+    }
+    
+    /* Optimize canvas rendering */
+    canvas {
+        image-rendering: -webkit-optimize-contrast;
     }
 `;
 document.head.appendChild(style);
