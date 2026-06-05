@@ -13,6 +13,9 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- heic2any library for HEIC/HEIF image format conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,7 +106,7 @@
             <div class="flex items-center gap-2">
                 <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 [...]
                     </svg>
                 </div>
                 <div>
@@ -168,6 +171,15 @@
                                 <p class="text-gray-500 text-sm">Any image format • Max 10MB • Auto-converted to JPG</p>
                                 <input type="file" id="fileInput" accept="image/*" class="hidden">
                             </div>
+                            <!-- Loading state for HEIC conversion (hidden by default) -->
+                            <div id="heicLoadingState" class="mt-4 hidden">
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-blue-500 spinner" fill="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="60" stroke-dashoffset="0"></circle>
+                                    </svg>
+                                    <p class="text-sm font-medium text-blue-800">🍎 Converting iPhone format...</p>
+                                </div>
+                            </div>
                             <div id="fileInfo" class="mt-4 hidden">
                                 <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                                     <p class="text-sm text-green-800"><span id="fileName" class="font-semibold">No file</span> selected ✓</p>
@@ -196,10 +208,10 @@
                                     UPSC Standard
                                 </h3>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <button class="preset-btn upsc-photo px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-blue-500 hover:text-blue-600" data-preset="upsc" data-type="photo">
+                                    <button class="preset-btn upsc-photo px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-blue-500 hover:text-blue-600" data-pr[...]
                                         📷 UPSC Photo
                                     </button>
-                                    <button class="preset-btn upsc-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-blue-500 hover:text-blue-600" data-preset="upsc" data-type="signature">
+                                    <button class="preset-btn upsc-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-blue-500 hover:text-blue-600" dat[...]
                                         ✍️ UPSC Signature
                                     </button>
                                 </div>
@@ -212,10 +224,10 @@
                                     IIT-JEE Standard
                                 </h3>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <button class="preset-btn iitjee-photo px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-purple-500 hover:text-purple-600" data-preset="iitjee" data-type="photo">
+                                    <button class="preset-btn iitjee-photo px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-purple-500 hover:text-purple-600" d[...]
                                         📷 IIT-JEE Photo
                                     </button>
-                                    <button class="preset-btn iitjee-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-purple-500 hover:text-purple-600" data-preset="iitjee" data-type="signature">
+                                    <button class="preset-btn iitjee-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-purple-500 hover:text-purple-60[...]
                                         ✍️ IIT-JEE Signature
                                     </button>
                                 </div>
@@ -228,16 +240,16 @@
                                     NEET Standard (NTA-Compliant)
                                 </h3>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <button class="preset-btn neet-preset neet-passport px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="passport">
+                                    <button class="preset-btn neet-preset neet-passport px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pi[...]
                                         📷 Passport Size
                                     </button>
-                                    <button class="preset-btn neet-preset neet-postcard px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="postcard">
+                                    <button class="preset-btn neet-preset neet-postcard px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pi[...]
                                         🖼️ Postcard Size
                                     </button>
-                                    <button class="preset-btn neet-preset neet-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="signature">
+                                    <button class="preset-btn neet-preset neet-signature px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-p[...]
                                         ✍️ Signature
                                     </button>
-                                    <button class="preset-btn neet-preset neet-thumb px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600" data-preset="neet" data-type="thumb">
+                                    <button class="preset-btn neet-preset neet-thumb px-4 py-3 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-pink-500 hover:text-pink-[...]
                                         👍 Thumb Impression
                                     </button>
                                 </div>
@@ -250,7 +262,7 @@
                             <div class="space-y-4">
                                 <div>
                                     <label for="candidateName" class="block text-xs font-medium text-gray-700 mb-2">Candidate Name (for watermark)</label>
-                                    <input type="text" id="candidateName" placeholder="e.g., John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <input type="text" id="candidateName" placeholder="e.g., John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:r[...]
                                 </div>
                                 <div>
                                     <label for="photoDate" class="block text-xs font-medium text-gray-700 mb-2">Date (for watermark)</label>
@@ -483,7 +495,7 @@
                     </div>
 
                     <div class="mt-4 bg-white border border-pink-300 rounded-lg p-3 text-xs text-pink-900">
-                        <strong>NTA Compliance Note:</strong> All images must meet NTA's strict quality and size requirements for NEET applications. This tool ensures precise compliance with 2026 NTA guidelines.
+                        <strong>NTA Compliance Note:</strong> All images must meet NTA's strict quality and size requirements for NEET applications. This tool ensures precise compliance with 2026[...]
                     </div>
                 </div>
             </section>
@@ -505,7 +517,7 @@
                     <div class="text-center">
                         <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
                         <h3 class="font-semibold text-gray-900 mb-2">Upload</h3>
-                        <p class="text-sm text-gray-700">Click or drag any image format (PNG, WebP, BMP, etc.)</p>
+                        <p class="text-sm text-gray-700">Click or drag any image format (PNG, WebP, BMP, HEIC, etc.)</p>
                     </div>
                     <div class="text-center">
                         <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
@@ -526,7 +538,7 @@
 
                 <div class="bg-white rounded-lg p-6 border-l-4 border-blue-500">
                     <h3 class="font-semibold text-gray-900 mb-2">🔒 Your Privacy is Our Priority</h3>
-                    <p class="text-gray-700 text-sm">All image processing happens directly in your browser using the HTML5 Canvas API. Your images are <strong>never uploaded to any server</strong>. We don't collect, store, or analyze your data. This approach ensures your documents remain completely private and helps us keep the service free for everyone. Additionally, we automatically convert any image format to standard JPG, ensuring universal compatibility with all exam portals.</p>
+                    <p class="text-gray-700 text-sm">All image processing happens directly in your browser using the HTML5 Canvas API. Your images are <strong>never uploaded to any server</strong[...]
                 </div>
             </section>
 
@@ -541,7 +553,7 @@
                             <span class="text-gray-500">+</span>
                         </button>
                         <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
-                            <p>Yes, absolutely. All processing happens locally in your browser. Your images never leave your device. We use the HTML5 Canvas API for all image manipulations, and no data is sent to our servers.</p>
+                            <p>Yes, absolutely. All processing happens locally in your browser. Your images never leave your device. We use the HTML5 Canvas API for all image manipulations, and n[...]
                         </div>
                     </div>
 
@@ -551,7 +563,7 @@
                             <span class="text-gray-500">+</span>
                         </button>
                         <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
-                            <p>Yes! We support all image formats (PNG, WebP, BMP, GIF, TIFF, etc.). If your image has a transparent background (like most PNGs), we automatically fill it with white before conversion. The final output is always a standard JPG file, which is required by all exam portals.</p>
+                            <p>Yes! We support all image formats (PNG, WebP, BMP, GIF, TIFF, HEIC/HEIF etc.). If your image has a transparent background (like most PNGs), we automatically fill it with whit[...]
                         </div>
                     </div>
 
@@ -561,7 +573,7 @@
                             <span class="text-gray-500">+</span>
                         </button>
                         <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
-                            <p>UPSC has made it mandatory from 2026 onwards to include the candidate's name and date of photo at the bottom of the photograph. This helps verify the authenticity and recency of the photograph during the application process.</p>
+                            <p>UPSC has made it mandatory from 2026 onwards to include the candidate's name and date of photo at the bottom of the photograph. This helps verify the authenticity a[...]
                         </div>
                     </div>
 
@@ -571,7 +583,7 @@
                             <span class="text-gray-500">+</span>
                         </button>
                         <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
-                            <p>We use a binary search algorithm to adjust the JPEG quality parameter. Starting from 50% quality, we iteratively compress the image, checking if the file size falls within the required range. This ensures you get the best possible image quality while meeting the exact file size requirements of your exam.</p>
+                            <p>We use a binary search algorithm to adjust the JPEG quality parameter. Starting from 50% quality, we iteratively compress the image, checking if the file size falls[...]
                         </div>
                     </div>
 
@@ -581,7 +593,7 @@
                             <span class="text-gray-500">+</span>
                         </button>
                         <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
-                            <p>Our tool includes all NTA-compliant presets for NEET: Passport Size Photo (413×531 px), Postcard Size Photo (472×708 px), Signature (413×177 px), and Thumb Impression. Each adheres to strict file size limits and is verified against the latest 2026 NTA guidelines.</p>
+                            <p>Our tool includes all NTA-compliant presets for NEET: Passport Size Photo (413×531 px), Postcard Size Photo (472×708 px), Signature (413×177 px), and Thumb Impre[...]
                         </div>
                     </div>
 
@@ -591,7 +603,7 @@
                             <span class="text-gray-500">+</span>
                         </button>
                         <div class="faq-answer hidden px-6 py-4 bg-gray-50 text-gray-700 text-sm">
-                            <p>This tool works on all modern browsers including Chrome, Firefox, Safari, and Edge on desktop and mobile devices. We use standard HTML5 Canvas API features that are widely supported.</p>
+                            <p>This tool works on all modern browsers including Chrome, Firefox, Safari, and Edge on desktop and mobile devices. We use standard HTML5 Canvas API features that are[...]
                         </div>
                     </div>
                 </div>
