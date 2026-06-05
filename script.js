@@ -1,7 +1,7 @@
 /**
  * Image Resizer & Compressor for UPSC, IIT-JEE, and NEET Applications
- * Enhanced with Universal Image Format Support and Auto-JPG Conversion
- * Client-side image processing using HTML5 Canvas API
+ * Enhanced with Universal Image Format Support, HEIC/HEIF Conversion, and Auto-JPG Conversion
+ * Client-side image processing using HTML5 Canvas API + heic2any library
  * No server uploads, 100% private processing
  */
 
@@ -102,6 +102,7 @@ const elements = {
     fileName: document.getElementById('fileName'),
     fileFormatInfo: document.getElementById('fileFormatInfo'),
     uploadSection: document.getElementById('uploadSection'),
+    heicLoadingState: document.getElementById('heicLoadingState'),
     presetSection: document.getElementById('presetSection'),
     upscPhotoOptions: document.getElementById('upscPhotoOptions'),
     candidateName: document.getElementById('candidateName'),
@@ -159,16 +160,18 @@ function initializeUploadArea() {
 }
 
 /**
- * Handle file selection - Now accepts any image format
+ * Handle file selection with HEIC/HEIF conversion support
+ * Detects Apple's HEIC format and converts it to JPEG client-side
+ * using the heic2any library before processing.
  */
-function handleFileSelect() {
+async function handleFileSelect() {
     const file = elements.fileInput.files[0];
     
     if (!file) return;
     
     // Validate file type - accepts all image formats
     if (!file.type.startsWith('image/')) {
-        showError('Please upload a valid image file (PNG, JPG, WebP, BMP, etc.)');
+        showError('Please upload a valid image file (PNG, JPG, WebP, BMP, HEIC, etc.)');
         return;
     }
     
@@ -178,6 +181,57 @@ function handleFileSelect() {
         return;
     }
     
+    // Check if file is HEIC/HEIF format
+    const isHeicFormat = file.type === 'image/heic' || file.type === 'image/heif';
+    
+    // If HEIC/HEIF, show loading state and convert
+    if (isHeicFormat) {
+        elements.heicLoadingState.classList.remove('hidden');
+        
+        try {
+            // Use heic2any library to convert HEIC blob to JPEG blob
+            const convertedBlob = await window.heic2any({
+                blob: file,
+                toType: 'image/jpeg'
+            });
+            
+            // Create a new File object from the converted blob
+            // Use the original filename but with .jpg extension
+            const originalNameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+            const convertedFile = new File(
+                [convertedBlob],
+                originalNameWithoutExt + '.jpg',
+                { type: 'image/jpeg' }
+            );
+            
+            // Update file input and proceed with converted file
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(convertedFile);
+            elements.fileInput.files = dataTransfer.files;
+            
+            // Process the converted file
+            processConvertedFile(convertedFile);
+            
+            // Hide loading state
+            elements.heicLoadingState.classList.add('hidden');
+        } catch (error) {
+            // If conversion fails, show friendly error
+            console.error('HEIC conversion error:', error);
+            elements.heicLoadingState.classList.add('hidden');
+            showError('Failed to convert iPhone format (HEIC). Please try another image or use a different format.');
+            return;
+        }
+    } else {
+        // For standard web images, proceed with existing logic
+        processConvertedFile(file);
+    }
+}
+
+/**
+ * Process the file (either converted from HEIC or standard format)
+ * This wraps the existing FileReader pipeline for consistency.
+ */
+function processConvertedFile(file) {
     appState.uploadedFile = file;
     elements.fileName.textContent = file.name;
     
@@ -188,7 +242,7 @@ function handleFileSelect() {
     
     elements.fileInfo.classList.remove('hidden');
     
-    // Read file as image
+    // Read file as image (existing FileReader pipeline)
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
@@ -208,6 +262,7 @@ function handleFileSelect() {
 
 /**
  * Extract image format from MIME type
+ * Now recognizes HEIC and HEIF formats
  */
 function getImageFormatFromMimeType(mimeType) {
     const formats = {
@@ -218,7 +273,9 @@ function getImageFormatFromMimeType(mimeType) {
         'image/bmp': 'bmp',
         'image/gif': 'gif',
         'image/tiff': 'tiff',
-        'image/x-tiff': 'tiff'
+        'image/x-tiff': 'tiff',
+        'image/heic': 'heic',
+        'image/heif': 'heif'
     };
     
     return formats[mimeType] || 'unknown';
@@ -444,7 +501,7 @@ function compressImage(image, targetWidth, targetHeight, quality, preset, type, 
     
     const ctx = canvas.getContext('2d');
     
-    // Fill background with WHITE first (critical for PNG transparency)
+    // Fill background with WHITE first (critical for PNG transparency and non-JPG formats)
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, targetWidth, targetHeight);
     
@@ -593,6 +650,7 @@ function handleReset() {
     // Reset UI
     elements.fileInput.value = '';
     elements.fileInfo.classList.add('hidden');
+    elements.heicLoadingState.classList.add('hidden');
     elements.previewSection.classList.add('hidden');
     elements.processingSection.classList.add('hidden');
     elements.upscPhotoOptions.classList.add('hidden');
@@ -696,8 +754,9 @@ function showSuccess(message) {
  * Initialize the entire application
  */
 function initializeApp() {
-    console.log('Initializing Image Resizer & Compressor App (Enhanced)');
-    console.log('Supported formats: JPG, PNG (with transparency handling), WebP, BMP, GIF, TIFF');
+    console.log('Initializing Image Resizer & Compressor App (Enhanced with HEIC/HEIF Support)');
+    console.log('Supported formats: JPG, PNG (with transparency handling), WebP, BMP, GIF, TIFF, HEIC/HEIF');
+    console.log('HEIC/HEIF conversion: Powered by heic2any library');
     
     // Setup handlers
     initializeUploadArea();
